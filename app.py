@@ -30,3 +30,18 @@ with st.form("insurance_cost_form"):
         smoker = st.selection("Smoker", options= le_smoker.classes_)
 
         submitted = st.form_submit_button("Predict Payment")
+
+if submitted:
+
+    input_data = pd.DataFrame({
+        "age": [age],
+        "gender": [gender],
+        "bmi": [bmi],
+        "bloodpressure": [bloodpressure],
+        "diabetic": [diabetic],
+        "children": [children],
+        "smoker": [smoker]
+    })
+
+    input_data["gender"] = le_gender.transform(input_data["gender"])
+    input_data
