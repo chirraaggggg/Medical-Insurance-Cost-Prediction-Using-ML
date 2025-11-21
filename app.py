@@ -54,4 +54,4 @@ if submitted:
 
     prediction = model.predict(input_data)[0]
 
-    # st.success(f"**Estimated Insurance Payment Amount:** ${prediction:,.2f}")
+    st.success(f"**Estimated Insurance Payment Amount:** ${prediction:,.2f}")
