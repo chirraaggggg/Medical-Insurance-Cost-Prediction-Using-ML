@@ -2,34 +2,51 @@ import streamlit as st
 import pandas as pd
 import joblib 
 import numpy as np
+from pathlib import Path
+import sys
+
+# Base dir (file location) so relative paths work when you run `streamlit run app.py`
+BASE_DIR = Path(__file__).resolve().parent
+
+def load_joblib(filename: str):
+    path = BASE_DIR / filename
+    if not path.exists():
+        st.error(f"Required file not found: {path}")
+        st.error("Place the file in the project folder or update the filename/path in app.py")
+        st.stop()
+    try:
+        return joblib.load(path)
+    except Exception as e:
+        st.error(f"Failed to load {path}: {e}")
+        st.stop()
 
 # Load your trained model and encoders (ensure these files are in the same folder)
-scaler = joblib.load("scaler.pkl")
-le_gender = joblib.load("label_encoder_gender.pkl")
-le_diabetic = joblib.load("label_encoder_diabetic.pkl")
-le_smoker = joblib.load("label_encoder_smoker.pkl")
-# le_region = joblib.load("label_encoder_region.pkl")  # This was loaded, but not used in the inputs (add to inputs if required) - Removed as file does not exist and region is not used
+scaler = load_joblib("scaler.pkl")
+le_gender = load_joblib("label_encoder_gender.pkl")
+le_diabetic = load_joblib("label_encoder_diabetic.pkl")
+le_smoker = load_joblib("label_encoder_smoker.pkl")
+# le_region = load_joblib("label_encoder_region.pkl")  # enable if you have this file
 
-model = joblib.load("model.pkl")
+model = load_joblib("model.pkl")
 
 st.set_page_config(page_title="Medical Insurance Cost Prediction", page_icon=":medical:", layout="wide")
 st.title("Medical Insurance Cost Prediction")
 st.write("Enter the following details to estimate the insurance cost")
 
 with st.form("insurance_cost_form"):
-    col1, col2 = st.columns(2)  # Corrected typo: st.columns instead of st.colums
+    col1, col2 = st.columns(2)
     with col1:
         age = st.number_input("Age", min_value=0, max_value=100, value=30)
-        bmi = st.number_input("BMI", min_value=10.0, max_value=60.0, value=25.0)
-        children = st.number_input("Number of Children", min_value=0, max_value=10, value=0)  # Increased max_value
+        bmi = st.number_input("BMI", min_value=10.0, max_value=60.0, value=25.0)  # fixed typo
+        children = st.number_input("Number of Children", min_value=0, max_value=10, value=0)
 
     with col2:
         bloodpressure = st.number_input("Blood Pressure", min_value=60, max_value=200, value=120)
-        gender = st.selectbox("Gender", options=le_gender.classes_)  # Use st.selectbox
+        gender = st.selectbox("Gender", options=le_gender.classes_)
         diabetic = st.selectbox("Diabetic", options=le_diabetic.classes_)
         smoker = st.selectbox("Smoker", options=le_smoker.classes_)
 
-    submitted = st.form_submit_button("Predict Payment")  # Place outside of columns but inside form
+    submitted = st.form_submit_button("Predict Payment")
 
 if submitted:
     input_data = pd.DataFrame({
@@ -46,8 +63,6 @@ if submitted:
     input_data["gender"] = le_gender.transform(input_data["gender"])
     input_data["diabetic"] = le_diabetic.transform(input_data["diabetic"])
     input_data["smoker"] = le_smoker.transform(input_data["smoker"])
-
-    # If your model expects 'region', you should add region input and transform with le_region too
 
     num_cols = ["age", "bmi", "bloodpressure", "children"]
     input_data[num_cols] = scaler.transform(input_data[num_cols])
