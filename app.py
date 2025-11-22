@@ -112,8 +112,7 @@ st.set_page_config(page_title="Medical Insurance Cost Prediction", page_icon=":m
 st.markdown(
     """
     <style>
-      /* page background and container tweaks */
-      .stApp { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
+      /* removed global page background - only hero keeps a dark bg so the heading can be white */
       .hero {
         background: linear-gradient(90deg,#0f172a,#0b3d91);
         color: white;
@@ -122,7 +121,7 @@ st.markdown(
         box-shadow: 0 8px 30px rgba(2,6,23,0.12);
         margin-bottom: 18px;
       }
-      .hero h1 { margin: 0; font-size: 34px; color: #ffffff; }
+      .hero h1 { margin: 0; font-size: 34px; color: #ffffff; } /* heading white */
       .hero p { margin: 6px 0 0; color: rgba(255,255,255,0.85); }
       .card { background: white; padding: 16px; border-radius: 12px; box-shadow: 0 6px 20px rgba(11,36,84,0.06); }
       .small-muted { color: #6b7280; font-size:12px; }
